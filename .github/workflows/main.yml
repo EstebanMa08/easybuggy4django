@@ -13,7 +13,7 @@ jobs:
 
       - name: Install OSV-Scanner binary
         run: |
-          wget -O /usr/bin/osv-scanner https://github.com/google/osv-scanner/releases/download/v1.4.0/osv-scanner_1.4.0_linux_amd64 && sudo chmod +x /usr/bin/osv-scanner
+          sudo wget -O /usr/bin/osv-scanner https://github.com/google/osv-scanner/releases/download/v1.4.0/osv-scanner_1.4.0_linux_amd64 && sudo chmod +x /usr/bin/osv-scanner
 
       - name: Scan requirements.txt and save result
         run: |
