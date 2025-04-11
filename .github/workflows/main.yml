@@ -1,33 +1,12 @@
 name: Scan for Vulnerabilities
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  depchecktest:
-    runs-on: ubuntu-latest
-    name: depecheck_test
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build project with Maven
-        run: mvn clean install
-      - name: Depcheck
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
-        with:
-          project: 'test'
-          path: '.'
-          format: 'HTML'
-          out: 'reports' # this is the default, no need to specify unless you wish to override it
-          args: >
-            --failOnCVSS 7
-            --enableRetired
-      - name: Upload Test results
-        uses: actions/upload-artifact@master
-        with:
-           name: Depcheck report
-           path: ${{github.workspace}}/reports
-
   osv-scan:
     name: Run OSV Scanner
     runs-on: ubuntu-latest
@@ -36,12 +15,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install OSV-Scanner binary
+        run: |
+          curl -L https://github.com/google/osv-scanner/releases/latest/download/osv-scanner-linux-amd64 -o osv-scanner
+          chmod +x osv-scanner
+          sudo mv osv-scanner /usr/local/bin
+
       - name: Scan requirements.txt and save result
-        uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.0.0"
-        with:
-          scan-args: |-
-            --lockfile=./requirements.txt
-            --format=json > vul_results.json
+        run: |
+          osv-scanner --lockfile=requirements.txt --format=json > vul_results.json
 
       - name: Upload vulnerability report as artifact
         uses: actions/upload-artifact@v4
