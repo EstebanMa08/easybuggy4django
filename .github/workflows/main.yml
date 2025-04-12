@@ -24,3 +24,4 @@ jobs:
         with:
           name: osv-vulnerability-report
           path: vul_results.json
+        if: always() 
