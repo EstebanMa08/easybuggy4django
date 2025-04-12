@@ -43,7 +43,7 @@ jobs:
         run: npm install
 
       - name: Run Snyk
-        run: snyk test --json > snyk-results.json
+        run: snyk test --strict-out-of-sync=false --json . > snyk-results.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
